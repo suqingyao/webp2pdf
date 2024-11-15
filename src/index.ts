@@ -1,9 +1,11 @@
 import sharp from 'sharp';
-import { program } from 'commander';
+import { cac } from 'cac';
 import { PDFDocument } from 'pdf-lib';
 import glob from 'fast-glob';
 import fs from 'fs-extra';
 import { resolve } from 'node:path';
+import ora from 'ora';
+import inquirer from 'inquirer';
 
 const rootPath = process.cwd();
 
@@ -12,7 +14,7 @@ const rootPath = process.cwd();
  * @param {string} inputDir - WebP 文件所在目录。
  * @param {string} outputFileName - 输出 PDF 文件名。
  */
-export async function convertWebPToPDF(inputDir, outputFileName) {
+export async function convertWebPToPDF(inputDir: string, outputFileName: string) {
   const sourceDir = resolve(rootPath, inputDir);
   const targetFileName = resolve(sourceDir, outputFileName);
 
@@ -20,6 +22,21 @@ export async function convertWebPToPDF(inputDir, outputFileName) {
   if (!fs.pathExistsSync(sourceDir)) {
     console.warn('输入路径不存在:', sourceDir);
     return;
+  }
+
+  // 检查输出文件是否已存在
+  if (fs.pathExistsSync(targetFileName)) {
+    const { overwrite } = await inquirer.prompt({
+      type: 'confirm',
+      name: 'overwrite',
+      message: `文件 ${targetFileName} 已存在，是否覆盖？`,
+      default: false,
+    });
+
+    if (!overwrite) {
+      console.log('操作已取消');
+      return;
+    }
   }
 
   // 查找目录中的所有 WebP 文件
@@ -35,7 +52,10 @@ export async function convertWebPToPDF(inputDir, outputFileName) {
   const pageWidth = tempPage.getWidth();
   pdfDoc.removePage(0); // 移除临时页
 
-  for (const webpFile of webpFiles) {
+  // 创建进度指示器
+  const spinner = ora('转换中...').start();
+
+  for (const [index, webpFile] of webpFiles.entries()) {
     const imageBuffer = await fs.readFile(webpFile);
     const pngBuffer = await sharp(imageBuffer).png().toBuffer();
     const pngImage = await pdfDoc.embedPng(pngBuffer);
@@ -56,21 +76,35 @@ export async function convertWebPToPDF(inputDir, outputFileName) {
       });
       offsetY += page.getHeight(); // 更新偏移量
     }
+    // 更新进度指示器文本为百分比
+    const percentage = (((index + 1) / webpFiles.length) * 100).toFixed(2);
+    spinner.text = `转换中... (${percentage}%)`;
   }
 
-  // 保存 PDF 文件
+  // 保存 PDF 文件并更新进度指示器
+  spinner.text = '正在保存 PDF 文件...';
   const pdfBytes = await pdfDoc.save();
-  await fs.writeFile(targetFileName, pdfBytes);
-  console.log(`PDF 文件已生成: ${targetFileName}`);
-}
+  const writeStream = fs.createWriteStream(targetFileName);
+  writeStream.write(pdfBytes);
+  writeStream.end();
 
-program
-  .version('1.0.0')
-  .description('将指定目录下的所有 WebP 文件转换为单个 PDF 文件')
-  .option('-i, --input <directory>', '输入目录', process.cwd())
-  .option('-o, --output <filename>', '输出的 PDF 文件名', 'output.pdf')
-  .action((options) => {
-    convertWebPToPDF(options.input, options.output);
+  writeStream.on('finish', () => {
+    spinner.succeed('PDF 文件已生成');
   });
 
-program.parse(process.argv);
+  writeStream.on('error', (err) => {
+    spinner.fail(`保存 PDF 文件时出错: ${err.message}`);
+  });
+}
+
+// 使用 cac 解析命令行参数
+const cli = cac('webp-to-pdf');
+
+cli
+  .command('<inputDir> <outputFileName>', '将指定目录中的所有 WebP 文件转换为 PDF 文件')
+  .action((inputDir, outputFileName) => {
+    convertWebPToPDF(inputDir, outputFileName);
+  });
+
+cli.help();
+cli.parse();
