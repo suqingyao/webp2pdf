@@ -7,6 +7,11 @@
     "pdf",
     "convert"
   ],
+  "homepage": "https://github.com/suqingyao/webp2pdf#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/suqingyao/webp2pdf.git"
+  },
   "license": "MIT",
   "author": "suqingyao <suqingyao333@gmail.com>",
   "type": "module",
