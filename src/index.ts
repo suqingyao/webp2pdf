@@ -14,7 +14,7 @@ const rootPath = process.cwd();
  * @param {string} inputDir - WebP 文件所在目录。
  * @param {string} outputFileName - 输出 PDF 文件名。
  */
-export async function convertWebPToPDF(inputDir: string, outputFileName: string) {
+export async function convertWebPToPDF(inputDir: string = '.', outputFileName: string = 'output.pdf') {
   const sourceDir = resolve(rootPath, inputDir);
   const targetFileName = resolve(sourceDir, outputFileName);
 
