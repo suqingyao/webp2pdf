@@ -101,8 +101,8 @@ export async function convertWebPToPDF(inputDir: string = '.', outputFileName: s
 const cli = cac('webp-to-pdf');
 
 cli
-  .command('<inputDir> <outputFileName>', '将指定目录中的所有 WebP 文件转换为 PDF 文件')
-  .action((inputDir, outputFileName) => {
+  .command('[inputDir] [outputFileName]', '将指定目录中的所有 WebP 文件转换为 PDF 文件')
+  .action((inputDir = '.', outputFileName = 'output.pdf') => {
     convertWebPToPDF(inputDir, outputFileName);
   });
 
