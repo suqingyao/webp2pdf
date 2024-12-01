@@ -1,6 +1,6 @@
 {
   "name": "webp2pdf",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Tool to convert multiple webps into one pdf",
   "keywords": [
     "webp",
