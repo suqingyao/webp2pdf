@@ -14,11 +14,11 @@
 ### Command Line Usage
 
 ```sh
-webp2pdf <inputDir> <outputFileName>
+webp2pdf [inputDir] [outputFileName]
 ```
 
-- `<inputDir>`: Directory containing WebP files
-- `<outputFileName>`: Name of the output PDF file
+- `[inputDir]`: Directory containing WebP files
+- `[outputFileName]`: Name of the output PDF file
 
 ### Example
 
