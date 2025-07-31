@@ -31,7 +31,7 @@
   ],
   "scripts": {
     "build": "tsdown",
-    "test": "echo \"No tests specified\" && exit 0",
+    "test": "echo \"No tests specified\"",
     "release": "node scripts/release.js",
     "release:patch": "pnpm build && pnpm version patch && pnpm publish",
     "release:minor": "pnpm build && pnpm version minor && pnpm publish",

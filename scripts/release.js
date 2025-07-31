@@ -128,7 +128,7 @@ async function release() {
 
   // 执行发布流程
   runCommand('pnpm build', '构建项目');
-  runCommand('pnpm test --passWithNoTests', '运行测试');
+  runCommand('pnpm test', '运行测试');
   runCommand(`pnpm version ${releaseType}`, '更新版本号');
   runCommand('git push', '推送代码');
   runCommand('git push --tags', '推送标签');
