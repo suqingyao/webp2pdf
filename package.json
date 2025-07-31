@@ -26,11 +26,17 @@
   "files": [
     "dist",
     "bin",
+    "scripts",
     "README.md"
   ],
   "scripts": {
     "build": "tsdown",
-    "release": "npm run build && npm version patch && npm publish"
+    "test": "echo \"No tests specified\" && exit 0",
+    "release": "node scripts/release.js",
+    "release:patch": "pnpm build && pnpm version patch && pnpm publish",
+    "release:minor": "pnpm build && pnpm version minor && pnpm publish",
+    "release:major": "pnpm build && pnpm version major && pnpm publish",
+    "prepublishOnly": "pnpm build"
   },
   "dependencies": {
     "cac": "^6.7.14",
