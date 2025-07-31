@@ -29,7 +29,7 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "release": "npm run build && npm version patch && npm publish"
   },
   "dependencies": {
@@ -45,7 +45,7 @@
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.8.1",
-    "tsup": "^8.3.5",
+    "tsdown": "^0.13.0",
     "typescript": "^5.6.3"
   }
 }
